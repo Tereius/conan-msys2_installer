@@ -8,12 +8,14 @@ import os
 
 
 class MSYS2InstallerConan(ConanFile):
-    name = "msys2_installer"
+    name = "msys2"
     version = "20161025"
     description = "MSYS2 is a software distro and building platform for Windows"
     url = "https://github.com/bincrafters/conan-msys2_installer"
     license = "MSYS license"
     exports = ["LICENSE.md"]
+    options = {"provideMinGW": [True, False]}
+    default_options = "provideMinGW=False"
     build_requires = "7z_installer/1.0@conan/stable"
     short_paths = True
 
@@ -55,6 +57,8 @@ class MSYS2InstallerConan(ConanFile):
         
         with tools.chdir(os.path.join(msys_dir, "usr", "bin")):
             self.run('bash -l -c "pacman -S base-devel --noconfirm"')
+            if self.options.provideMinGW:
+                self.run('bash -l -c "pacman -S mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain --noconfirm"')
         
         # create /tmp dir in order to avoid
         # bash.exe: warning: could not find /tmp, please create!
